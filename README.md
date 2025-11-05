@@ -214,7 +214,7 @@ Before starting this setup, ensure you have the following:
   - Security Groups and NACLs
   - SSH key management
 
-###🧑‍💻 Author
+## 👨‍💻 **Author**
 
 Rohit Chand
 
