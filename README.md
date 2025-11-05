@@ -214,9 +214,9 @@ Before starting this setup, ensure you have the following:
   - Security Groups and NACLs
   - SSH key management
 
-### 💻 Local Machine Requirements
-- Installed **AWS CLI**  
-  ```bash
-  aws --version
+🧑‍💻 Author
+
+Rohit Chand
+Cloud Computing Enthusiast|AWS Learner
 
 
