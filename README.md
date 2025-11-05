@@ -145,7 +145,7 @@ Now that the peering connection and route tables are configured, test communicat
 
 ### 🖥️ 1️⃣ Connect to EC2 Instance in VPC-A
 If the instance is in a **public subnet**, connect directly using SSH:
-```bash
+bash
 ssh -i mykey.pem ec2-user@<EC2-Public-IP>
 If it’s in a private subnet, first connect to a bastion host in the same VPC.
 
