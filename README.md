@@ -143,7 +143,7 @@ Example rules:
 ### 🧪 Step 10: Test Connectivity
 
 #### 1️⃣ Connect to EC2 in VPC-A
-```bash
+bash
 ssh -i mykey.pem ec2-user@<EC2-Public-IP>
 2️⃣ From EC2-A → Ping EC2 in VPC-B
 ping 172.16.2.10
