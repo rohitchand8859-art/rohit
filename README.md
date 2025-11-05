@@ -139,20 +139,38 @@ Example rules:
 
 ---
 
+## 🔗 Step 10: Test Connectivity Between VPCs
 
-### 🧪 Step 10: Test Connectivity
+Now that the peering connection and route tables are configured, test communication between EC2 instances across VPCs.
 
-#### 1️⃣ Connect to EC2 in VPC-A
-bash
+### 🖥️ 1️⃣ Connect to EC2 Instance in VPC-A
+If the instance is in a **public subnet**, connect directly using SSH:
+```bash
 ssh -i mykey.pem ec2-user@<EC2-Public-IP>
-2️⃣ From EC2-A → Ping EC2 in VPC-B
+If it’s in a private subnet, first connect to a bastion host in the same VPC.
+
+🧪 2️⃣ Ping Private Instance in VPC-B
+From inside EC2-PrivA (VPC-A):
+
 bash
 Copy code
 ping 172.16.2.10
-✅ Successful replies indicate VPC Peering and routing are correct.
+✅ If the configuration is correct, you’ll receive ICMP replies like:
 
-🔗 Step 11: Connect EC2 Instance from One VPC to Another (via VPC Peering)
-After setup, test private communication between instances.
+nginx
+Copy code
+PING 172.16.2.10 (172.16.2.10) 56(84) bytes of data.
+64 bytes from 172.16.2.10: icmp_seq=1 ttl=254 time=52 ms
+If the ping fails:
+
+Check if ICMP is allowed in both instances’ Security Groups.
+
+Verify route tables include the correct Peering Connection.
+
+Confirm that the VPC Peering status is Active.
+
+🔗 Step 11: Connect EC2 Instance from One VPC to Another (Private IP Communication)
+After verifying connectivity, you can now directly SSH between EC2 instances using private IPs over VPC Peering.
 
 🧾 Example Setup
 Component	VPC-A (ap-south-1)	VPC-B (us-east-1)
@@ -160,45 +178,19 @@ VPC CIDR	10.0.0.0/16	172.16.0.0/16
 Private Subnet	10.0.2.0/24	172.16.2.0/24
 EC2 Instance	EC2-PrivA (10.0.2.10)	EC2-PrivB (172.16.2.10)
 
-🖥️ Connect Using SSH
-From EC2-PrivA:
+🖥️ Connect from EC2-PrivA → EC2-PrivB
+Once you’re inside the private EC2 in VPC-A, connect to the EC2 in VPC-B using its private IP:
 
 bash
 Copy code
 ssh ec2-user@172.16.2.10
-✅ Connected privately to VPC-B using VPC Peering.
+✅ You are now connected from VPC-A → VPC-B over AWS’s private backbone network (no Internet access used).
 
 🧪 Test with Ping
+You can also verify the connection with ping:
+
 bash
 Copy code
 ping 172.16.2.10
-Expected:
+If you get replies, communication is working successfully over VPC Peering.
 
-nginx
-Copy code
-PING 172.16.2.10 (172.16.2.10) 56(84) bytes of data.
-64 bytes from 172.16.2.10: icmp_seq=1 ttl=254 time=52 ms
-🧰 Optional: Enable DNS Resolution
-bash
-Copy code
-aws ec2 modify-vpc-peering-connection-options \
-  --vpc-peering-connection-id pcx-1234567890abcdef \
-  --requester-peering-connection-options '{"AllowDnsResolutionFromRemoteVpc":true}' \
-  --accepter-peering-connection-options '{"AllowDnsResolutionFromRemoteVpc":true}'
-Then use:
-
-bash
-Copy code
-ping ip-172-16-2-10.us-east-1.compute.internal
-🧠 Summary
-Two VPCs in different AWS regions connected via VPC Peering.
-
-Private EC2s in each VPC communicate using private IPs.
-
-Routing and security rules ensure secure, internal-only communication.
-
-No Internet Gateway or NAT used for cross-VPC traffic.
-
-✅ Result:
-EC2-PrivA (10.0.2.10) ↔ EC2-PrivB (172.16.2.10)
-Private, secure communication via VPC Peering (Same Account, Cross Region).
