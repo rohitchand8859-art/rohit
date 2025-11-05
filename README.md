@@ -16,4 +16,10 @@ It is commonly used for:
 ---
 
 ## 🏗️ Architecture Overview
+Region 1 (ap-south-1) Region 2 (us-east-1)
+┌──────────────────────────┐ ┌──────────────────────────┐
+│ VPC-A (10.0.0.0/16) │ │ VPC-B (172.16.0.0/16) │
+│ └── Subnet (10.0.1.0/24)│ <────► │ └── Subnet (172.16.1.0/24)│
+│ EC2 Instance A │ │ EC2 Instance B │
+└──────────────────────────┘ └──────────────────────────┘
 
