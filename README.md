@@ -194,3 +194,29 @@ Copy code
 ping 172.16.2.10
 If you get replies, communication is working successfully over VPC Peering.
 
+---
+
+## ⚙️ Requirements
+
+Before starting this setup, ensure you have the following:
+
+### 🧰 AWS Requirements
+- An **AWS account** with sufficient permissions to create:
+  - VPCs  
+  - Subnets  
+  - Internet Gateways  
+  - Route Tables  
+  - EC2 Instances  
+  - VPC Peering Connections
+- At least **two different AWS regions** available (example: `ap-south-1` and `us-east-1`)
+- Basic understanding of:
+  - Networking (CIDR, routing)
+  - Security Groups and NACLs
+  - SSH key management
+
+### 💻 Local Machine Requirements
+- Installed **AWS CLI**  
+  ```bash
+  aws --version
+
+
