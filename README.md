@@ -146,41 +146,59 @@ Example rules:
 bash
 ssh -i mykey.pem ec2-user@<EC2-Public-IP>
 2️⃣ From EC2-A → Ping EC2 in VPC-B
+bash
+Copy code
 ping 172.16.2.10
-
-
 ✅ Successful replies indicate VPC Peering and routing are correct.
 
-## 🔗 Step 11: Connect EC2 Instance from One VPC to Another (via VPC Peering)
+🔗 Step 11: Connect EC2 Instance from One VPC to Another (via VPC Peering)
+After setup, test private communication between instances.
 
-After the peering connection, route tables, and security groups are configured correctly, you can now test and connect EC2 instances **privately across regions**.
+🧾 Example Setup
+Component	VPC-A (ap-south-1)	VPC-B (us-east-1)
+VPC CIDR	10.0.0.0/16	172.16.0.0/16
+Private Subnet	10.0.2.0/24	172.16.2.0/24
+EC2 Instance	EC2-PrivA (10.0.2.10)	EC2-PrivB (172.16.2.10)
 
----
+🖥️ Connect Using SSH
+From EC2-PrivA:
 
-### 🧾 Example Setup
-| Component | VPC-A (ap-south-1) | VPC-B (us-east-1) |
-|------------|--------------------|--------------------|
-| VPC CIDR | 10.0.0.0/16 | 172.16.0.0/16 |
-| Private Subnet | 10.0.2.0/24 | 172.16.2.0/24 |
-| EC2 Instance | EC2-PrivA (10.0.2.10) | EC2-PrivB (172.16.2.10) |
-| Peering Connection | pcx-1234567890abcdef | (same) |
+bash
+Copy code
+ssh ec2-user@172.16.2.10
+✅ Connected privately to VPC-B using VPC Peering.
 
----
+🧪 Test with Ping
+bash
+Copy code
+ping 172.16.2.10
+Expected:
 
-### ✅ Prerequisites
-- The **VPC Peering connection** is **active and accepted**.  
-- **Route tables** updated:
-  - In `VPC-A`: Route to `172.16.0.0/16` → Target = Peering Connection  
-  - In `VPC-B`: Route to `10.0.0.0/16` → Target = Peering Connection  
-- **Security Groups** allow:
-  - Inbound SSH (TCP 22) and ICMP from the peer VPC’s CIDR range.  
-- **Network ACLs** allow traffic between the two CIDRs.  
+nginx
+Copy code
+PING 172.16.2.10 (172.16.2.10) 56(84) bytes of data.
+64 bytes from 172.16.2.10: icmp_seq=1 ttl=254 time=52 ms
+🧰 Optional: Enable DNS Resolution
+bash
+Copy code
+aws ec2 modify-vpc-peering-connection-options \
+  --vpc-peering-connection-id pcx-1234567890abcdef \
+  --requester-peering-connection-options '{"AllowDnsResolutionFromRemoteVpc":true}' \
+  --accepter-peering-connection-options '{"AllowDnsResolutionFromRemoteVpc":true}'
+Then use:
 
----
+bash
+Copy code
+ping ip-172-16-2-10.us-east-1.compute.internal
+🧠 Summary
+Two VPCs in different AWS regions connected via VPC Peering.
 
-### 🖥️ Step 1: Connect to EC2 in VPC-A
-If `EC2-PrivA` is in a **public subnet**, connect directly using its public IP:
-```bash
+Private EC2s in each VPC communicate using private IPs.
 
-ssh -i mykey.pem ec2-user@<EC2-PrivA-public-IP>
+Routing and security rules ensure secure, internal-only communication.
 
+No Internet Gateway or NAT used for cross-VPC traffic.
+
+✅ Result:
+EC2-PrivA (10.0.2.10) ↔ EC2-PrivB (172.16.2.10)
+Private, secure communication via VPC Peering (Same Account, Cross Region).
